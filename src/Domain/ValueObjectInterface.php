@@ -11,7 +11,7 @@ interface ValueObjectInterface
      * @param ValueObjectInterface $otherObject
      * @return boolean
      */
-    public function equals(static $otherObject);
+    public function equals(ValueObjectInterface $otherObject);
 
     /**
      * @return string
