@@ -24,10 +24,10 @@ abstract class ValueObject implements ValueObjectInterface
     /**
      * Compare this ValueObject to another of the same type.
      *
-     * @param ValueObject|static $otherObject
+     * @param ValueObjectInterface $otherObject
      * @return bool
      */
-    abstract protected function equalsSelf(static $otherObject);
+    abstract protected function equalsSelf(ValueObjectInterface $otherObject);
 
     /**
      * @param ValueObjectInterface $otherObject
