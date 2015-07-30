@@ -1,0 +1,21 @@
+{
+    "name": "depotwarehouse/blumba",
+    "description": "An opinionated EventSourcing/CQRS framework for PHP Projects",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Troy Pavlek",
+            "email": "troy@tpavlek.me"
+        }
+    ],
+    "require": {
+        "league/event": "^2.1",
+        "illuminate/contracts": "^5.1"
+    },
+    "suggest": {
+        "illuminate/database": "Integrated serialization/connection"
+    },
+    "require-dev": {
+        "illuminate/database": "^5.1"
+    }
+}
