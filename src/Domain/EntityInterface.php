@@ -11,7 +11,7 @@ interface EntityInterface
      * @param EntityInterface $otherEntity
      * @return boolean
      */
-    public function equals(static $otherEntity);
+    public function equals(EntityInterface $otherEntity);
 
     /**
      * @return mixed
