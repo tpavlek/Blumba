@@ -2,21 +2,55 @@
 
 namespace Depotwarehouse\Blumba\EventSourcing;
 
+use Carbon\Carbon;
 use Depotwarehouse\Blumba\EventSourcing\Exceptions\UnhandledEventException;
+use Depotwarehouse\Blumba\ReadModel\ProjectorInterface;
+use Illuminate\Database\ConnectionInterface;
 use League\Event\AbstractListener;
 use League\Event\EventInterface;
 
 class EventRecorder extends AbstractListener implements EventRecorderInterface
 {
 
+    /**
+     * @var \Illuminate\Database\Query\Builder
+     */
+    protected $eventTable;
+    /**
+     * @var ConnectionInterface
+     */
+    protected $databaseConnection;
+    protected $eventProjectors;
+
+    public function __construct(ConnectionInterface $database, $eventTableName, array $eventProjectors = [])
+    {
+        $this->databaseConnection = $database;
+        $this->eventTable = $database->table($eventTableName);
+        $this->eventProjectors = $eventProjectors;
+    }
+
     public function recordThat(SerializableEventInterface $event)
     {
-        // TODO: Implement recordThat() method.
+        $now = Carbon::now()->toDateTimeString();
+
+        $this->eventTable->insert([
+            'eventName' => $event->getName(),
+            'aggregateId' => $event->getAggregateId(),
+            'eventPayload' => $event->getSerialzedPayload(),
+            'timestamp' => $now
+        ]);
     }
 
     public function projectThat(SerializableEventInterface $event)
     {
-        // TODO: Implement projectThat() method.
+        if (array_key_exists($event->getName(), $this->eventProjectors)) {
+            foreach ($this->eventProjectors[$event->getName()] as $projectorClass) {
+                /** @var ProjectorInterface $projector */
+                $projector = $projectorClass::initialize($this->databaseConnection);
+
+                $projector->project($event);
+            }
+        }
     }
 
     /**

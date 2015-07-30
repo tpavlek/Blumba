@@ -10,7 +10,8 @@
     ],
     "require": {
         "league/event": "^2.1",
-        "illuminate/contracts": "^5.1"
+        "illuminate/contracts": "^5.1",
+        "nesbot/carbon": "^1.20"
     },
     "suggest": {
         "illuminate/database": "Integrated serialization/connection"

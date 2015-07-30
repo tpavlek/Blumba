@@ -2,7 +2,9 @@
 
 namespace Depotwarehouse\Blumba\EventSourcing;
 
-interface SerializableEventInterface
+use League\Event\EventInterface;
+
+interface SerializableEventInterface extends EventInterface
 {
 
     /**
