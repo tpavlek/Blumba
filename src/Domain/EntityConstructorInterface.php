@@ -15,16 +15,9 @@ namespace Depotwarehouse\Blumba\Domain;
  * 
  * @package Depotwarehouse\Blumba\Domain
  */
-interface EntityConstructorInterface
+interface EntityConstructorInterface extends Reconstituteable
 {
 
-    /**
-     * Given an array of attributes, reconstitute an existing entity.
-     *
-     * @param array $attributes
-     * @return EntityInterface
-     */
-    public function createInstance(array $attributes);
 
     /**
      * Given an array of attributes, construct a new entity.
