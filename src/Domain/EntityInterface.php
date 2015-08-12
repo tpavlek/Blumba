@@ -14,7 +14,7 @@ interface EntityInterface
     public function equals(EntityInterface $otherEntity);
 
     /**
-     * @return mixed
+     * @return IdValueInterface
      */
     public function getId();
 
