@@ -5,6 +5,7 @@ namespace Depotwarehouse\Blumba\ReadModel;
 use Depotwarehouse\Blumba\Domain\EntityConstructorInterface;
 use Depotwarehouse\Blumba\Domain\Reconstituteable;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Support\Str;
 
 abstract class ReadModelRepository
 {
@@ -12,7 +13,7 @@ abstract class ReadModelRepository
     protected $connection;
     protected $constructor;
 
-    protected function __construct(ConnectionInterface $connection, Reconstituteable $constructor)
+    public function __construct(ConnectionInterface $connection, Reconstituteable $constructor)
     {
         $this->connection = $connection;
         $this->constructor = $constructor;
@@ -30,6 +31,14 @@ abstract class ReadModelRepository
      */
     protected abstract function getTableName();
 
+    /**
+     * Map the given object into an array of key => value pairs for use with inserting into the database.
+     *
+     * @param $object
+     * @return array
+     */
+    protected abstract function mapToInsert($object);
+
     protected function getTable()
     {
         return $this->connection->table($this->getTableName());
@@ -37,8 +46,31 @@ abstract class ReadModelRepository
 
     public function find($id)
     {
-        $data = $this->getTable()->where('id', '=', $id)->get();
-
+        $data = $this->getTable()->where('id', '=', $id)->first();
         return $this->constructor->createInstance((array)$data);
+    }
+
+    public function insert($object)
+    {
+        $data = $this->mapToInsert($object);
+        $this->callGuards($data);
+        return $this->getTable()->insert($data);
+    }
+
+    private function callGuards(array $data)
+    {
+        $reflection = new \ReflectionClass($this);
+
+        foreach ($reflection->getMethods() as $method) {
+            /** @var \ReflectionMethod $method */
+
+            // We're looking for a method that starts with "guard" and takes a single array as a parameter.
+            if (Str::startsWith($method->getName(), "guard")) {
+                if ($method->getNumberOfParameters() == 1 && $method->getParameters()[0]->isArray()) {
+                    // We've found a guard method, let's call it.
+                    $this->{$method->getName()}($data);
+                }
+            }
+        }
     }
 }

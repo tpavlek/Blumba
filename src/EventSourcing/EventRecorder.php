@@ -66,7 +66,17 @@ class EventRecorder extends AbstractListener implements EventRecorderInterface
             throw new UnhandledEventException($event, $this);
         }
 
-        $this->recordThat($event);
-        $this->projectThat($event);
+        $this->databaseConnection->beginTransaction();
+
+        try {
+            $this->recordThat($event);
+            $this->projectThat($event);
+
+            $this->databaseConnection->commit();
+        } catch (\Exception $exception) {
+            $this->databaseConnection->rollBack();
+            throw $exception;
+        }
+
     }
 }

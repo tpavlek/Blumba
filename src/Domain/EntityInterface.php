@@ -2,7 +2,9 @@
 
 namespace Depotwarehouse\Blumba\Domain;
 
-interface EntityInterface
+use Illuminate\Contracts\Support\Arrayable;
+
+interface EntityInterface extends Arrayable
 {
 
     /**
