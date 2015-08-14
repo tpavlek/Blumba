@@ -46,7 +46,8 @@ abstract class ReadModelRepository
 
     public function find($id)
     {
-        $data = $this->getTable()->where('id', '=', $id)->first();
+        $data = (array)$this->getTable()->where('id', '=', $id)->first();
+        $this->callLoads($data);
         return $this->constructor->createInstance((array)$data);
     }
 
@@ -57,7 +58,24 @@ abstract class ReadModelRepository
         return $this->getTable()->insert($data);
     }
 
-    private function callGuards(array $data)
+    protected function callLoads(array &$data)
+    {
+        $reflection = new \ReflectionClass($this);
+
+        foreach ($reflection->getMethods() as $method) {
+            /** @var \ReflectionMethod $method */
+
+            // We're looking for a method that starts with "load" and takes a single array as a parameter.
+            if (Str::startsWith($method->getName(), "load")) {
+                if ($method->getNumberOfParameters() == 1 && $method->getParameters()[0]->isArray()) {
+                    // We've found a guard method, let's call it.
+                    $this->{$method->getName()}($data);
+                }
+            }
+        }
+    }
+
+    protected function callGuards(array $data)
     {
         $reflection = new \ReflectionClass($this);
 
