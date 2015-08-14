@@ -20,4 +20,11 @@ interface EntityInterface extends Arrayable
      */
     public function getId();
 
+    /**
+     * Get the string representation of this object.
+     *
+     * @return string
+     */
+    public function toString();
+
 }
