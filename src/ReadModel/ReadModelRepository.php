@@ -5,6 +5,7 @@ namespace Depotwarehouse\Blumba\ReadModel;
 use Depotwarehouse\Blumba\Domain\EntityConstructorInterface;
 use Depotwarehouse\Blumba\Domain\Reconstituteable;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 abstract class ReadModelRepository
@@ -49,6 +50,17 @@ abstract class ReadModelRepository
         $data = (array)$this->getTable()->where('id', '=', $id)->first();
         $this->callLoads($data);
         return $this->constructor->createInstance((array)$data);
+    }
+
+    public function findAll(array $ids)
+    {
+        $found = new Collection();
+
+        foreach ($ids as $id) {
+            $found->push($this->find($id));
+        }
+
+        return $found;
     }
 
     public function insert($object)
