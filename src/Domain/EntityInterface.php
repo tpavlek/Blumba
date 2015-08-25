@@ -2,7 +2,9 @@
 
 namespace Depotwarehouse\Blumba\Domain;
 
+use Depotwarehouse\Blumba\EventSourcing\SerializableEventInterface;
 use Illuminate\Contracts\Support\Arrayable;
+use League\Event\EventInterface;
 
 interface EntityInterface extends Arrayable
 {
@@ -14,6 +16,15 @@ interface EntityInterface extends Arrayable
      * @return boolean
      */
     public function equals(EntityInterface $otherEntity);
+
+    /**
+     * Given a particular event from the system, apply the changes in that event to this object.
+     *
+     * @param SerializableEventInterface $event
+     * @return static
+     * @throws EntityCouldNotApplyEventException
+     */
+    public function apply(SerializableEventInterface $event);
 
     /**
      * @return IdValueInterface

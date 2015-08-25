@@ -3,6 +3,7 @@
 namespace Depotwarehouse\Blumba\ReadModel;
 
 use Depotwarehouse\Blumba\Domain\EntityConstructorInterface;
+use Depotwarehouse\Blumba\Domain\EntityInterface;
 use Depotwarehouse\Blumba\Domain\Reconstituteable;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Collection;
@@ -68,6 +69,11 @@ abstract class ReadModelRepository
         $data = $this->mapToInsert($object);
         $this->callGuards($data);
         return $this->getTable()->insert($data);
+    }
+
+    public function remove(EntityInterface $entity)
+    {
+        return $this->getTable()->delete($entity->getId()->toString());
     }
 
     protected function callLoads(array &$data)
