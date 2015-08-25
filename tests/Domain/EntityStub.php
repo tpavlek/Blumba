@@ -10,6 +10,7 @@ class EntityStub extends Entity
 
     public function applyMockEventNameStub(MockEventNameStubEvent $event)
     {
+        $this->setAttribute("mock_attribute", "new_value");
     }
 
     /**

@@ -6,6 +6,9 @@ use Depotwarehouse\Blumba\EventSourcing\SerializableEventInterface;
 
 abstract class Entity implements EntityInterface
 {
+
+    protected $dirty = [];
+
     /**
      * Compute equality of the identity of this entity with another entity.
      *
@@ -32,7 +35,13 @@ abstract class Entity implements EntityInterface
             throw new EntityCouldNotApplyEventException($this, $event);
         }
 
-        $this->{$methodName}($event);
+        return $this->{$methodName}($event);
+    }
+
+    protected function setAttribute($attribute_name, $new_value)
+    {
+        $this->{$attribute_name} = $new_value;
+        $this->dirty[] = $attribute_name;
     }
 
 
@@ -50,5 +59,30 @@ abstract class Entity implements EntityInterface
 
         return null;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function isDirty()
+    {
+        return count($this->dirty) > 0;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDirty()
+    {
+        return $this->dirty;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function clean()
+    {
+        $this->dirty = [];
+    }
+
 
 }

@@ -38,4 +38,25 @@ interface EntityInterface extends Arrayable
      */
     public function toString();
 
+    /**
+     * Has any property of this entity been mutated since last being cleaned (serialized)?
+     *
+     * @return bool
+     */
+    public function isDirty();
+
+    /**
+     * Get the list of attributes which have changed since last being cleaned.
+     *
+     * @return array
+     */
+    public function getDirty();
+
+    /**
+     * Set the entity state to completely serialized and up-to-date.
+     *
+     * @return static
+     */
+    public function clean();
+
 }
