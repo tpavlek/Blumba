@@ -1,8 +1,9 @@
 <?php
 
-namespace Depotwarehouse\Blumba\Tests\Domain;
+namespace Depotwarehouse\Blumba\Domain;
 
 use Depotwarehouse\Blumba\Domain\EntityInterface;
+use Exception;
 
 class StateUncleanException extends \Exception
 {

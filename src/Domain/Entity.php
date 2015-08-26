@@ -9,6 +9,25 @@ abstract class Entity implements EntityInterface
 
     protected $dirty = [];
 
+    public function __get($attribute)
+    {
+        if (!isset($this->{$attribute})) {
+            throw new \Exception("Could not access {$attribute} on " . get_class($this));
+        }
+
+        $getMethod = "get" . ucfirst(camel_case($attribute));
+        return $this->{$getMethod}();
+    }
+
+    public function __isset($attribute)
+    {
+        $getMethod = "get" . ucfirst(camel_case($attribute));
+
+        if (method_exists($this, $getMethod)) {
+            return true;
+        }
+    }
+
     /**
      * Compute equality of the identity of this entity with another entity.
      *
