@@ -46,6 +46,18 @@ abstract class ReadModelRepository
         return $this->connection->table($this->getTableName());
     }
 
+    public function all()
+    {
+        $collection = new Collection();
+        foreach ($this->getTable()->get() as $data) {
+            $data = (array)$data;
+            $this->callLoads($data);
+            $collection->push($this->constructor->createInstance($data));
+        }
+
+        return $collection;
+    }
+
     public function find($id)
     {
         $data = (array)$this->getTable()->where('id', '=', $id)->first();
@@ -71,9 +83,29 @@ abstract class ReadModelRepository
         return $this->getTable()->insert($data);
     }
 
+    public function update(EntityInterface $entity)
+    {
+        $attributes = [ ];
+        foreach ($entity->getDirty() as $dirtyAttribute) {
+            $attributes[$dirtyAttribute] = $entity->{$dirtyAttribute}->serialize();
+        }
+
+        return $this->getTable()->where('id', '=', $entity->getId()->toString())->update($attributes);
+    }
+
     public function remove(EntityInterface $entity)
     {
         return $this->getTable()->delete($entity->getId()->toString());
+    }
+
+    /**
+     * @param array $data
+     * @return EntityInterface
+     */
+    protected function constructInstance(array &$data)
+    {
+        $this->callLoads($data);
+        return $this->constructor->createInstance($data);
     }
 
     protected function callLoads(array &$data)

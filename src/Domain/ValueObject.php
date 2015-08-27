@@ -41,4 +41,12 @@ abstract class ValueObject implements ValueObjectInterface
 
         return $this->equalsOther($otherObject);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function serialize()
+    {
+        return $this->toString();
+    }
 }

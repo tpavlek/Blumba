@@ -17,4 +17,11 @@ interface ValueObjectInterface
      * @return string
      */
     public function toString();
+
+    /**
+     * Convert the object to a form that is representable in a database.
+     *
+     * @return string
+     */
+    public function serialize();
 }
