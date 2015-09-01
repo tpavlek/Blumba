@@ -2,6 +2,8 @@
 
 namespace Depotwarehouse\Blumba\ReadModel;
 
+use Carbon\Carbon;
+use Depotwarehouse\Blumba\Domain\Entity;
 use Depotwarehouse\Blumba\Domain\EntityConstructorInterface;
 use Depotwarehouse\Blumba\Domain\EntityInterface;
 use Depotwarehouse\Blumba\Domain\Reconstituteable;
@@ -76,21 +78,40 @@ abstract class ReadModelRepository
         return $found;
     }
 
+    /**
+     * @param $object
+     * @return mixed The id of the newly inserted object
+     */
     public function insert($object)
     {
         $data = $this->mapToInsert($object);
         $this->callGuards($data);
-        return $this->getTable()->insert($data);
+        return $this->getTable()->insertGetId($data);
     }
 
     public function update(EntityInterface $entity)
     {
         $attributes = [ ];
-        foreach ($entity->getDirty() as $dirtyAttribute) {
-            $attributes[$dirtyAttribute] = $entity->{$dirtyAttribute}->serialize();
+        foreach ($entity->getDirty() as $dirtyAttributeName) {
+            //TODO transition off carbon onto Date/DateTime wrappers, and remove this.
+            if ($entity->{$dirtyAttributeName} instanceof Carbon) {
+                $attributes[$dirtyAttributeName] = $entity->{$dirtyAttributeName}->toDateString();
+                continue;
+            }
+            $dirtyAttribute = $entity->{$dirtyAttributeName};
+
+            // Entities are serialized by relation, so we'll store the ID in the entity_name_id field.
+            if ($dirtyAttribute instanceof Entity) {
+                $attributes[$dirtyAttributeName . "_id"] = $dirtyAttribute->getId()->toString();
+                continue;
+            }
+
+            $attributes[$dirtyAttributeName] = $entity->{$dirtyAttributeName}->serialize();
         }
 
-        return $this->getTable()->where('id', '=', $entity->getId()->toString())->update($attributes);
+        $result = $this->getTable()->where('id', '=', $entity->getId()->toString())->update($attributes);
+        $entity->clean();
+        return $result;
     }
 
     public function remove(EntityInterface $entity)

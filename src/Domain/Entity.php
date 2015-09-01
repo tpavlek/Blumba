@@ -63,6 +63,16 @@ abstract class Entity implements EntityInterface
         $this->dirty[] = $attribute_name;
     }
 
+    public function syncAttributes(array $attributes)
+    {
+        foreach ($attributes as $key => $attribute)
+        {
+            if (!$this->{$key}->equals($attribute)) {
+                $this->setAttribute($key, $attribute);
+            }
+        }
+    }
+
 
     private function calculateCallableMethod($prefix, SerializableEventInterface $event)
     {
