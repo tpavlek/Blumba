@@ -60,9 +60,18 @@ abstract class ReadModelRepository
         return $collection;
     }
 
+    /**
+     * @param $id
+     * @return EntityInterface
+     * @throws NotFoundException
+     */
     public function find($id)
     {
         $data = (array)$this->getTable()->where('id', '=', $id)->first();
+        if ($data === null || $data == []) {
+            throw new NotFoundException();
+        }
+
         $this->callLoads($data);
         return $this->constructor->createInstance((array)$data);
     }
