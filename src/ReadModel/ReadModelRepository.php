@@ -69,7 +69,7 @@ abstract class ReadModelRepository
     {
         $data = (array)$this->getTable()->where('id', '=', $id)->first();
         if ($data === null || $data == []) {
-            throw new NotFoundException();
+            throw new NotFoundException($this->getTableName(), "ID: {$id}");
         }
 
         $this->callLoads($data);
