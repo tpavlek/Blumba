@@ -10,6 +10,7 @@ use Depotwarehouse\Blumba\Domain\Reconstituteable;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use phpDocumentor\Reflection\DocBlock;
 
 abstract class ReadModelRepository
 {
@@ -102,6 +103,18 @@ abstract class ReadModelRepository
     {
         $attributes = [ ];
         foreach ($entity->getDirty() as $dirtyAttributeName) {
+
+            $reflection = new \ReflectionClass($entity);
+            $reflectionProperty = $reflection->getProperty($dirtyAttributeName);
+            $docblock = new DocBlock($reflectionProperty);
+            $serializeTag = $docblock->getTagsByName(Entity::SERIALIZE_DOC_TAG);
+
+            if (count($serializeTag) > 0) {
+                $serialize_attribute_name = $serializeTag[0]->getContent();
+            } else {
+                $serialize_attribute_name = $dirtyAttributeName;
+            }
+
             //TODO transition off carbon onto Date/DateTime wrappers, and remove this.
             if ($entity->{$dirtyAttributeName} instanceof Carbon) {
                 $attributes[$dirtyAttributeName] = $entity->{$dirtyAttributeName}->toDateString();
@@ -115,7 +128,7 @@ abstract class ReadModelRepository
                 continue;
             }
 
-            $attributes[$dirtyAttributeName] = $entity->{$dirtyAttributeName}->serialize();
+            $attributes[$serialize_attribute_name] = $entity->{$dirtyAttributeName}->serialize();
         }
 
         $result = $this->getTable()->where('id', '=', $entity->getId()->toString())->update($attributes);

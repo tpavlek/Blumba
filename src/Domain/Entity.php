@@ -7,6 +7,8 @@ use Depotwarehouse\Blumba\EventSourcing\SerializableEventInterface;
 abstract class Entity implements EntityInterface
 {
 
+    const SERIALIZE_DOC_TAG = "serializes";
+
     protected $dirty = [];
 
     public function __get($attribute)

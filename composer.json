@@ -12,7 +12,8 @@
         "league/event": "^2.1",
         "illuminate/contracts": "^5.1",
         "nesbot/carbon": "^1.20",
-        "ramsey/uuid": "^2.8"
+        "ramsey/uuid": "^2.8",
+        "phpdocumentor/reflection-docblock": "^2.0"
     },
     "suggest": {
         "illuminate/database": "Integrated serialization/connection"

@@ -39,7 +39,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $entity->apply($event);
 
         $this->assertTrue($entity->isDirty());
-        $this->assertEquals([ "mock_attribute" ], $entity->getDirty());
+        $this->assertEquals([ "mockProperty" ], $entity->getDirty());
     }
 
 }
