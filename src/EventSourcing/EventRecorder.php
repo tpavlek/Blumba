@@ -5,6 +5,7 @@ namespace Depotwarehouse\Blumba\EventSourcing;
 use Carbon\Carbon;
 use Depotwarehouse\Blumba\EventSourcing\Exceptions\UnhandledEventException;
 use Depotwarehouse\Blumba\ReadModel\ProjectorInterface;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\ConnectionInterface;
 use League\Event\AbstractListener;
 use League\Event\EventInterface;
@@ -21,11 +22,13 @@ class EventRecorder extends AbstractListener implements EventRecorderInterface
      */
     protected $databaseConnection;
     protected $eventProjectors;
+    protected $container;
 
-    public function __construct(ConnectionInterface $database, $eventTableName, array $eventProjectors = [])
+    public function __construct(ConnectionInterface $database, $eventTableName, Container $container, array $eventProjectors = [])
     {
         $this->databaseConnection = $database;
         $this->eventTable = $database->table($eventTableName);
+        $this->container = $container;
         $this->eventProjectors = $eventProjectors;
     }
 
@@ -46,7 +49,7 @@ class EventRecorder extends AbstractListener implements EventRecorderInterface
         if (array_key_exists($event->getName(), $this->eventProjectors)) {
             foreach ($this->eventProjectors[$event->getName()] as $projectorClass) {
                 /** @var ProjectorInterface $projector */
-                $projector = $projectorClass::initialize($this->databaseConnection);
+                $projector = $this->container->{$projectorClass};
 
                 $projector->project($event);
             }
