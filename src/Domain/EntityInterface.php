@@ -39,6 +39,16 @@ interface EntityInterface extends Arrayable
     public function toString();
 
     /**
+     * Serializes all the dirty attributes of the Entity.
+     *
+     * Any sub-entities will be serialized in the format sub_entity_id => $id. All value objects will be serialzed as
+     * property_name => $serialize_value
+     *
+     * @return array
+     */
+    public function serialize();
+
+    /**
      * Has any property of this entity been mutated since last being cleaned (serialized)?
      *
      * @return bool
