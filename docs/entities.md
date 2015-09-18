@@ -4,6 +4,11 @@ Entities
 Entities fufill the `EntityInterface` contract. For ease of use, we provide `Depotwarehouse\Blumba\Domain\Entity` as
 an abstract class that implements many of the common use-cases.
 
+Property Convention
+--------------------
+
+The convention established by entities is that their properties will be `snake_cased`, with the getters being `getCamelCased()`.
+
 Serialization
 --------------
 
