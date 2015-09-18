@@ -9,6 +9,11 @@ Property Convention
 
 The convention established by entities is that their properties will be `snake_cased`, with the getters being `getCamelCased()`.
 
+Any properties that are simple booleans such as `is_active` should be named as a property just like so. The get method
+for such a property would be phrased like a question `$entity->isActive()`.
+
+These conventions are important as they are assumed by the `ReadModelRepository` for quick serialization of `Entities`.
+
 Serialization
 --------------
 

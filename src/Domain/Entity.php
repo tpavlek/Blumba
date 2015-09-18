@@ -4,6 +4,7 @@ namespace Depotwarehouse\Blumba\Domain;
 
 use Carbon\Carbon;
 use Depotwarehouse\Blumba\EventSourcing\SerializableEventInterface;
+use Illuminate\Support\Str;
 use phpDocumentor\Reflection\DocBlock;
 
 abstract class Entity implements EntityInterface
@@ -19,7 +20,12 @@ abstract class Entity implements EntityInterface
             throw new \Exception("Could not access {$attribute} on " . get_class($this));
         }
 
-        $getMethod = "get" . ucfirst(camel_case($attribute));
+        if (Str::startsWith($attribute, "is_")) {
+            $getMethod = camel_case($attribute);
+        } else {
+            $getMethod = "get" . ucfirst(camel_case($attribute));
+        }
+
         return $this->{$getMethod}();
     }
 

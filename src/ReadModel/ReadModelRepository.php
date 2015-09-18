@@ -124,7 +124,13 @@ abstract class ReadModelRepository
 
             // Entities are serialized by relation, so we'll store the ID in the entity_name_id field.
             if ($dirtyAttribute instanceof Entity) {
-                $attributes[$dirtyAttributeName . "_id"] = $dirtyAttribute->getId()->toString();
+                $attributes[$serialize_attribute_name . "_id"] = $dirtyAttribute->getId()->toString();
+                continue;
+            }
+
+            // Any booleans can be serialized as they are
+            if (is_bool($dirtyAttribute)) {
+                $attributes[$serialize_attribute_name] = $dirtyAttribute;
                 continue;
             }
 
