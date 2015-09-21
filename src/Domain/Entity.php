@@ -77,7 +77,19 @@ abstract class Entity implements EntityInterface
     {
         foreach ($attributes as $key => $attribute)
         {
-            if (!$this->{$key}->equals($attribute)) {
+            /** @var ValueObjectInterface|bool $currentAttribute */
+            $currentAttribute = $this->{$key};
+
+            // If our attribute is a raw boolean, we'll compare it directly.
+            if (is_bool($currentAttribute)) {
+                if ($currentAttribute !== $attribute) {
+                    $this->setAttribute($key, $attribute);
+                }
+                continue;
+            }
+
+            // Otherwise it's a value object and we'll compare it according to its interface
+            if (!$currentAttribute->equals($attribute)) {
                 $this->setAttribute($key, $attribute);
             }
         }
