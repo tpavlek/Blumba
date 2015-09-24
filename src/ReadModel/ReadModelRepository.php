@@ -157,6 +157,29 @@ abstract class ReadModelRepository
         return $this->constructor->createInstance($data);
     }
 
+    /**
+     * Given an array of stdClass objects from the database, collect them and instantiate the appropriate domain objects
+     *
+     * @param array $queryData
+     * @return \Illuminate\Support\Collection
+     */
+    protected function collect(array $queryData)
+    {
+        if (count($queryData) == 0) {
+            return new Collection();
+        }
+
+        $result = new Collection();
+
+        foreach ($queryData as $getData) {
+            $data = (array)$getData;
+
+            $result->push($this->constructInstance($data));
+        }
+
+        return $result;
+    }
+
     protected function callLoads(array &$data)
     {
         $reflection = new \ReflectionClass($this);
