@@ -2,7 +2,7 @@
 
 namespace Depotwarehouse\Blumba\Domain;
 
-interface NumericValueInterface
+interface NumericValueInterface extends ValueObjectInterface
 {
 
     /**
