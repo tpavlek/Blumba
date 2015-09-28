@@ -8,6 +8,17 @@ trait NumericValue
 {
 
     /**
+     * If there was no arguments provided to the sum function, what should the default return value be?
+     *
+     * @return NumericValue
+     * @throws \InvalidArgumentException
+     */
+    protected static function getDefaultValueForSum()
+    {
+        throw new \InvalidArgumentException("You must provide at least one value to sum");
+    }
+
+    /**
      * @param \Depotwarehouse\Blumba\Domain\NumericValueInterface ...$numericValues
      * @return NumericValueInterface
      */
@@ -16,7 +27,7 @@ trait NumericValue
         $collection = new Collection($numericValues);
 
         if ($collection->count() == 0) {
-            throw new \InvalidArgumentException("You must provide at least one value to sum");
+           return static::getDefaultValueForSum();
         }
 
         $returnType = get_class($collection->first());
