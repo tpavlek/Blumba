@@ -12,7 +12,7 @@ abstract class Projector implements ProjectorInterface
         $methodName = $this->calculateCallableMethod("project", $event);
 
         if ($methodName === null) {
-            throw new EntityCouldNotApplyEventException($this, $event);
+            throw new ProjectorCouldNotProjectEventException($this, $event);
         }
 
         $this->{$methodName}($event);
