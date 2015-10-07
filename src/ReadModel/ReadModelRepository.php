@@ -8,6 +8,7 @@ use Depotwarehouse\Blumba\Domain\EntityConstructorInterface;
 use Depotwarehouse\Blumba\Domain\EntityInterface;
 use Depotwarehouse\Blumba\Domain\Reconstituteable;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use phpDocumentor\Reflection\DocBlock;
@@ -62,13 +63,32 @@ abstract class ReadModelRepository
     }
 
     /**
+     *
+     *
+     * Optionally you may pass a $recordLocator Closure that specifies how we determine which row we wish to update.
+     * The default implementation uses the `id` column and the `->getId()` method of the entity to find the row, but
+     * if you had a different key column you could pass something like
+     *
+     * ```php
+     * // $recordLocator
+     * function(Builder $query) use ($entity) {
+     *    $query->where('other_key_column', '=', $entity->getOtherColumn()->serialize());
+     * };
+     *
      * @param $id
+     * @param \Closure $recordLocator
      * @return EntityInterface
      * @throws NotFoundException
      */
-    public function find($id)
+    public function find($id, \Closure $recordLocator = null)
     {
-        $data = (array)$this->getTable()->where('id', '=', $id)->first();
+        if ($recordLocator === null) {
+            $recordLocator = function (Builder $query) use ($id) {
+                return $query->where('id', '=', $id);
+            };
+        }
+
+        $data = (array)$this->getTable()->where($recordLocator)->first();
         if ($data === null || $data == []) {
             throw new NotFoundException($this->getTableName(), "ID: {$id}");
         }
@@ -99,8 +119,22 @@ abstract class ReadModelRepository
         return $this->getTable()->insertGetId($data);
     }
 
-    public function update(EntityInterface $entity)
+    /**
+     * Update something //TODO.
+     *
+     * @see self::find() for documentation on $recordLocator
+     *
+     * @param EntityInterface $entity
+     * @param \Closure|null $recordLocator
+     * @return int
+     */
+    public function update(EntityInterface $entity, \Closure $recordLocator = null)
     {
+        if ($recordLocator === null) {
+            $recordLocator = function(Builder $query) use ($entity) {
+                $query->where('id', '=', $entity->getId()->toString());
+            };
+        }
         $attributes = [ ];
         foreach ($entity->getDirty() as $dirtyAttributeName) {
 
@@ -137,7 +171,7 @@ abstract class ReadModelRepository
             $attributes[$serialize_attribute_name] = $entity->{$dirtyAttributeName}->serialize();
         }
 
-        $result = $this->getTable()->where('id', '=', $entity->getId()->toString())->update($attributes);
+        $result = $this->getTable()->where($recordLocator)->update($attributes);
         $entity->clean();
         return $result;
     }

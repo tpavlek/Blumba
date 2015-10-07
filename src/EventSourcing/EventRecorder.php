@@ -36,12 +36,14 @@ class EventRecorder extends AbstractListener implements EventRecorderInterface
     {
         $now = Carbon::now()->toDateTimeString();
 
-        $this->eventTable->insert([
+        $data = [
             'eventName' => $event->getName(),
             'aggregateId' => $event->getAggregateId(),
             'eventPayload' => $event->getSerialzedPayload(),
             'timestamp' => $now
-        ]);
+        ];
+
+        $this->eventTable->insert($data);
     }
 
     public function projectThat(SerializableEventInterface $event)
