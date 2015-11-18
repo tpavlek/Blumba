@@ -7,7 +7,7 @@ use Depotwarehouse\Blumba\EventSourcing\SerializableEventInterface;
 class EntityCouldNotApplyEventException extends \Exception
 {
 
-    public function __construct(EntityInterface $entity, SerializableEventInterface $event)
+    public function __construct($entity, SerializableEventInterface $event)
     {
         $entityClass = get_class($entity);
         $message = "Entity of type: {$entityClass} does not know how to handle the event: {$event->getName()}";
